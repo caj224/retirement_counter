@@ -1,11 +1,12 @@
 # Retirement Counter
 
-A live countdown to retirement: days, hours, minutes, seconds, plus workdays and weekends remaining and an optional career-progress bar.
-
 **Live site:** https://caj224.github.io/retirement_counter/
 
-- Settings are saved in your browser.
-- "Copy share link" makes a URL like `?name=Pat&date=2040-06-30&start=2005-08-15` that anyone can open.
-- Installable as an app: on a phone, use "Add to Home Screen"; on desktop Chrome/Edge, use the install icon in the address bar. Works offline.
+1. **Log each day.** Pick a date (defaults to today), then tap **📚 Educational day** or **🌴 Retire day**. Tap the selected choice again to clear it. Totals for the current year and a full history are shown below.
+2. **Countdown.** A live countdown (days, hours, minutes, seconds) to the next January 1st.
+
+Logged days are saved in your browser on this device (localStorage), so each device or browser keeps its own log.
+
+Installable as an app: on a phone, use "Add to Home Screen"; on desktop Chrome/Edge, use the install icon in the address bar. Works offline.
 
 Plain HTML/CSS/JS, no build step. Hosted with GitHub Pages from the `main` branch.
