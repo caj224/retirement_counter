@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Retirement Counter</title>
+  <meta name="description" content="Count down every second until retirement.">
+  <meta name="theme-color" content="#0f172a">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1 id="title">Retirement Counter</h1>
+      <p id="subtitle" class="muted"></p>
+    </header>
+
+    <section id="countdown" hidden>
+      <div class="units">
+        <div class="unit"><span id="days">0</span><label>days</label></div>
+        <div class="unit"><span id="hours">00</span><label>hours</label></div>
+        <div class="unit"><span id="minutes">00</span><label>minutes</label></div>
+        <div class="unit"><span id="seconds">00</span><label>seconds</label></div>
+      </div>
+
+      <div class="stats">
+        <div><strong id="workdays">0</strong><span>workdays left</span></div>
+        <div><strong id="weeks">0</strong><span>weekends left</span></div>
+        <div><strong id="years">0</strong><span>years left</span></div>
+      </div>
+
+      <div id="progress-wrap" hidden>
+        <div class="progress"><div id="progress-bar"></div></div>
+        <p class="muted"><span id="progress-pct">0</span>% of the career complete</p>
+      </div>
+    </section>
+
+    <section id="done" hidden>
+      <p class="big">🎉 Retired!</p>
+      <p class="muted">Enjoy it.</p>
+    </section>
+
+    <details id="settings">
+      <summary>Settings</summary>
+      <form id="form">
+        <label>Name <input id="name" type="text" placeholder="Optional" maxlength="40"></label>
+        <label>Retirement date <input id="date" type="date" required></label>
+        <label>Career start date <input id="start" type="date"> <small class="muted">Optional, for progress bar</small></label>
+        <div class="buttons">
+          <button type="submit">Save</button>
+          <button type="button" id="share">Copy share link</button>
+        </div>
+        <p id="toast" class="muted" aria-live="polite"></p>
+      </form>
+    </details>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
