@@ -1,5 +1,6 @@
 const $ = (id) => document.getElementById(id);
 const STORAGE_KEY = "retirement-counter-days";
+const TARGET_KEY = "retirement-counter-target";
 const LABELS = { educational: "📚 Educational day", retire: "🌴 Retire day" };
 
 // { "YYYY-MM-DD": "educational" | "retire" }
@@ -67,16 +68,53 @@ function renderAll() {
   renderHistory();
 }
 
+// Custom target date (YYYY-MM-DD), or null to use the next January 1.
+function loadTarget() {
+  try { return localStorage.getItem(TARGET_KEY); } catch { return null; }
+}
+
+function saveTarget(value) {
+  try {
+    if (value) localStorage.setItem(TARGET_KEY, value);
+    else localStorage.removeItem(TARGET_KEY);
+  } catch {}
+}
+
+let customTarget = loadTarget();
+
+function getTarget(now) {
+  if (customTarget) {
+    const [y, m, d] = customTarget.split("-").map(Number);
+    return new Date(y, m - 1, d);
+  }
+  return new Date(now.getFullYear() + 1, 0, 1);
+}
+
 function renderCountdown() {
   const now = new Date();
-  const target = new Date(now.getFullYear() + 1, 0, 1);
-  $("countdown-title").textContent = `Countdown to January 1, ${target.getFullYear()}`;
-  const s = Math.floor((target - now) / 1000);
-  $("days").textContent = Math.floor(s / 86400);
+  const target = getTarget(now);
+  const label = target.toLocaleDateString(undefined, { month: "long", day: "numeric", year: "numeric" });
+  const s = Math.max(0, Math.floor((target - now) / 1000));
+  $("countdown-title").textContent = s > 0 ? `Countdown to ${label}` : `${label} is here! 🎉`;
+  $("days").textContent = Math.floor(s / 86400).toLocaleString();
   $("hours").textContent = pad(Math.floor(s / 3600) % 24);
   $("minutes").textContent = pad(Math.floor(s / 60) % 60);
   $("seconds").textContent = pad(s % 60);
+  if (document.activeElement !== $("target")) $("target").value = isoDate(target);
+  $("reset-target").hidden = !customTarget;
 }
+
+$("target").addEventListener("change", () => {
+  customTarget = $("target").value || null;
+  saveTarget(customTarget);
+  renderCountdown();
+});
+
+$("reset-target").addEventListener("click", () => {
+  customTarget = null;
+  saveTarget(null);
+  renderCountdown();
+});
 
 document.querySelectorAll(".choice").forEach((button) => {
   button.addEventListener("click", () => {
