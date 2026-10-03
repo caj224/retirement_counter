@@ -44,13 +44,47 @@ input[type=date] { font: inherit; padding: 8px 10px; border-radius: 8px; border:
 .unit span { font-size: clamp(1.6rem, 7vw, 2.8rem); font-weight: 700; font-variant-numeric: tabular-nums; color: var(--accent); }
 .unit label { color: var(--muted); font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; }
 
-details { text-align: left; }
-summary { cursor: pointer; font-weight: 600; }
-#history { list-style: none; padding: 0; margin: 12px 0 0; }
-#history li { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 0; border-top: 1px solid var(--border); }
-#history button { font: inherit; font-size: .8rem; padding: 4px 10px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg); color: var(--muted); cursor: pointer; }
-#history-empty { margin: 12px 0 0; }
 
 .target { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 8px; margin-top: 20px; font-size: .9rem; color: var(--muted); }
 .target input { margin: 0; }
 .target button { font: inherit; font-size: .85rem; padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--fg); cursor: pointer; }
+
+.tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px; margin-bottom: 16px; background: var(--card); border: 1px solid var(--border); border-radius: 12px; }
+.tab { font: inherit; font-weight: 600; padding: 8px; border: 0; border-radius: 8px; background: transparent; color: var(--muted); cursor: pointer; }
+.tab[aria-selected=true] { background: var(--bg); color: var(--fg); box-shadow: 0 0 0 1px var(--border); }
+
+.weekdays { margin: 16px 0 0; color: var(--muted); }
+.weekdays strong { color: var(--accent); font-size: 1.3rem; font-variant-numeric: tabular-nums; }
+
+.month-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.month-nav h2 { margin: 0; }
+.month-nav button { font: inherit; font-size: 1.4rem; width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--fg); cursor: pointer; }
+.month-nav button:disabled { opacity: .3; cursor: default; }
+
+.calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.dow { font-size: .75rem; color: var(--muted); padding-bottom: 4px; }
+.day { font: inherit; font-size: .9rem; aspect-ratio: 1; border-radius: 8px; border: 2px solid transparent; background: var(--bg); color: var(--fg); cursor: pointer; font-variant-numeric: tabular-nums; }
+.day.none { border: 1px dashed var(--border); }
+.day.educational { background: color-mix(in srgb, var(--edu) 25%, var(--bg)); border-color: var(--edu); }
+.day.retire { background: color-mix(in srgb, var(--retire) 25%, var(--bg)); border-color: var(--retire); }
+.day.future { color: var(--muted); opacity: .4; cursor: default; }
+.day.today { font-weight: 800; text-decoration: underline; }
+.day.editing { outline: 3px solid var(--accent); outline-offset: 1px; }
+
+.legend { margin: 14px 0 4px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px 6px; }
+.swatch { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-left: 8px; }
+.swatch.educational { background: var(--edu); }
+.swatch.retire { background: var(--retire); }
+.swatch.none { border: 1px dashed var(--muted); }
+#month-summary { margin: 0; }
+
+.choices.three { grid-template-columns: repeat(3, 1fr); }
+.edit-choice {
+  font: inherit; font-size: 1.6rem; cursor: pointer; padding: 14px 6px; border-radius: 14px;
+  border: 2px solid var(--border); background: var(--bg); color: var(--fg);
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.edit-choice span { font-size: .9rem; font-weight: 600; }
+.edit-choice[data-type=educational].selected { border-color: var(--edu); background: color-mix(in srgb, var(--edu) 15%, var(--bg)); }
+.edit-choice[data-type=retire].selected { border-color: var(--retire); background: color-mix(in srgb, var(--retire) 15%, var(--bg)); }
+.edit-choice[data-type=""].selected { border-color: var(--muted); }

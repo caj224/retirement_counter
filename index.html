@@ -17,6 +17,12 @@
       <h1>Retirement Counter</h1>
     </header>
 
+    <nav class="tabs" role="tablist">
+      <button type="button" role="tab" class="tab" data-tab="today" aria-selected="true">Today</button>
+      <button type="button" role="tab" class="tab" data-tab="history" aria-selected="false">History</button>
+    </nav>
+
+    <div id="panel-today" role="tabpanel">
     <section class="card">
       <h2>What kind of day was it?</h2>
       <input id="day" type="date" aria-label="Day to log">
@@ -41,6 +47,7 @@
         <div class="unit"><span id="minutes">00</span><label>minutes</label></div>
         <div class="unit"><span id="seconds">00</span><label>seconds</label></div>
       </div>
+      <p class="weekdays"><strong id="weekdays-left">0</strong> weekdays left</p>
       <div class="target">
         <label for="target">Count down to</label>
         <input id="target" type="date">
@@ -48,11 +55,33 @@
       </div>
     </section>
 
-    <details class="card" id="history-wrap">
-      <summary>History</summary>
-      <ul id="history"></ul>
-      <p id="history-empty" class="muted">No days logged yet.</p>
-    </details>
+    </div>
+
+    <div id="panel-history" role="tabpanel" hidden>
+      <section class="card">
+        <div class="month-nav">
+          <button type="button" id="prev-month" aria-label="Previous month">‹</button>
+          <h2 id="month-title"></h2>
+          <button type="button" id="next-month" aria-label="Next month">›</button>
+        </div>
+        <div class="calendar" id="calendar"></div>
+        <p class="muted small legend">
+          <span class="swatch educational"></span> Educational
+          <span class="swatch retire"></span> Retire
+          <span class="swatch none"></span> No choice
+        </p>
+        <p class="muted small" id="month-summary"></p>
+      </section>
+
+      <section class="card" id="editor" hidden>
+        <h2 id="editor-title"></h2>
+        <div class="choices three">
+          <button type="button" class="edit-choice" data-type="educational">📚<span>Educational</span></button>
+          <button type="button" class="edit-choice" data-type="retire">🌴<span>Retire</span></button>
+          <button type="button" class="edit-choice" data-type="">➖<span>No choice</span></button>
+        </div>
+      </section>
+    </div>
   </main>
   <script src="app.js"></script>
 </body>

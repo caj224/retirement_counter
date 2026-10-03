@@ -43,23 +43,69 @@ function renderStats() {
   $("stats-label").textContent = `Totals for ${year}`;
 }
 
+// History calendar: the month being shown, and the day selected for editing.
+let viewMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+let editDay = null;
+
+// The calendar starts at the earliest logged month, or January of this year.
+function firstMonth() {
+  const days = Object.keys(log).sort();
+  const today = new Date();
+  const jan = new Date(today.getFullYear(), 0, 1);
+  if (!days.length) return jan;
+  const [y, m] = days[0].split("-").map(Number);
+  const first = new Date(y, m - 1, 1);
+  return first < jan ? first : jan;
+}
+
 function renderHistory() {
-  const days = Object.keys(log).sort().reverse();
-  $("history-empty").hidden = days.length > 0;
-  $("history").replaceChildren(...days.map((day) => {
-    const li = document.createElement("li");
-    const text = document.createElement("span");
-    text.textContent = `${formatDay(day)} — ${LABELS[log[day]]}`;
-    const remove = document.createElement("button");
-    remove.textContent = "Remove";
-    remove.addEventListener("click", () => {
-      delete log[day];
-      saveLog();
-      renderAll();
+  const today = isoDate(new Date());
+  const y = viewMonth.getFullYear();
+  const m = viewMonth.getMonth();
+  const now = new Date();
+  $("month-title").textContent = viewMonth.toLocaleDateString(undefined, { month: "long", year: "numeric" });
+  $("prev-month").disabled = viewMonth <= firstMonth();
+  $("next-month").disabled = y > now.getFullYear() || (y === now.getFullYear() && m >= now.getMonth());
+
+  const cells = ["S", "M", "T", "W", "T", "F", "S"].map((d) => {
+    const el = document.createElement("div");
+    el.className = "dow";
+    el.textContent = d;
+    return el;
+  });
+  for (let i = 0; i < new Date(y, m, 1).getDay(); i++) cells.push(document.createElement("div"));
+
+  const counts = { educational: 0, retire: 0, none: 0 };
+  const daysInMonth = new Date(y, m + 1, 0).getDate();
+  for (let d = 1; d <= daysInMonth; d++) {
+    const day = `${y}-${pad(m + 1)}-${pad(d)}`;
+    const type = log[day];
+    const future = day > today;
+    if (!future) counts[type || "none"]++;
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "day" + (type ? ` ${type}` : future ? " future" : " none");
+    if (day === today) btn.classList.add("today");
+    if (day === editDay) btn.classList.add("editing");
+    btn.textContent = d;
+    btn.disabled = future;
+    btn.title = `${formatDay(day)} — ${type ? LABELS[type] : "No choice"}`;
+    btn.addEventListener("click", () => {
+      editDay = day;
+      renderHistory();
     });
-    li.append(text, remove);
-    return li;
-  }));
+    cells.push(btn);
+  }
+  $("calendar").replaceChildren(...cells);
+  $("month-summary").textContent =
+    `This month: ${counts.educational} educational, ${counts.retire} retire, ${counts.none} with no choice`;
+
+  $("editor").hidden = !editDay;
+  if (editDay) {
+    $("editor-title").textContent = formatDay(editDay);
+    document.querySelectorAll(".edit-choice").forEach((b) =>
+      b.classList.toggle("selected", b.dataset.type === (log[editDay] || "")));
+  }
 }
 
 function renderAll() {
@@ -102,6 +148,19 @@ function renderCountdown() {
   $("seconds").textContent = pad(s % 60);
   if (document.activeElement !== $("target")) $("target").value = isoDate(target);
   $("reset-target").hidden = !customTarget;
+  $("weekdays-left").textContent = weekdaysBetween(now, target).toLocaleString();
+}
+
+// Mon–Fri days from today (inclusive) up to the target (exclusive).
+function weekdaysBetween(from, to) {
+  const d = new Date(from.getFullYear(), from.getMonth(), from.getDate());
+  let count = 0;
+  while (d < to) {
+    const dow = d.getDay();
+    if (dow !== 0 && dow !== 6) count++;
+    d.setDate(d.getDate() + 1);
+  }
+  return count;
 }
 
 $("target").addEventListener("change", () => {
@@ -125,6 +184,35 @@ document.querySelectorAll(".choice").forEach((button) => {
     else log[day] = button.dataset.type;
     saveLog();
     renderAll();
+  });
+});
+
+document.querySelectorAll(".edit-choice").forEach((button) => {
+  button.addEventListener("click", () => {
+    if (!editDay) return;
+    if (button.dataset.type) log[editDay] = button.dataset.type;
+    else delete log[editDay];
+    saveLog();
+    renderAll();
+  });
+});
+
+$("prev-month").addEventListener("click", () => {
+  viewMonth = new Date(viewMonth.getFullYear(), viewMonth.getMonth() - 1, 1);
+  renderHistory();
+});
+
+$("next-month").addEventListener("click", () => {
+  viewMonth = new Date(viewMonth.getFullYear(), viewMonth.getMonth() + 1, 1);
+  renderHistory();
+});
+
+document.querySelectorAll(".tab").forEach((tab) => {
+  tab.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach((t) => t.setAttribute("aria-selected", t === tab));
+    $("panel-today").hidden = tab.dataset.tab !== "today";
+    $("panel-history").hidden = tab.dataset.tab !== "history";
+    if (tab.dataset.tab === "today") renderPicker();
   });
 });
 
